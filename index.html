@@ -1,23 +1,10 @@
 <!DOCTYPE html>
-<html lang="en" translate="no">
+<html lang="ja" translate="no">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>前夜から備える！データ記憶＆引っ越し機能付きToDoリスト</title>
     <style>
-    <!-- 【開発者看板リンク】これを追加するだけで自動でXに繋がります -->
-    <div style="text-align: center; margin-top: 20px;">
-        <a href="https://x.com/cocoa_next7" target="_blank" style="font-size: 12px; color: #3498db; text-decoration: none; font-weight: bold;">
-            🛠️ 開発者：ココア (プロのフリーランスへの成長記録はコチラ) 🛠️
-        </a>
-    </div>
-    <!-- 【開発者看板リンク】これを追加するだけで自動でXに繋がります -->
-    <div style="text-align: center; margin-top: 20px;">
-        <a href="https://x.com/cocoa_next7" target="_blank" style="font-size: 12px; color: #3498db; text-decoration: none; font-weight: bold;">
-            🛠️ 開発者：ココア (プロのフリーランスへの成長記録はコチラ) 🛠️
-        </a>
-    </div>
-
         body {
             background-color: #f6f8fa;
             font-family: 'Helvetica Neue', Arial, sans-serif;
@@ -32,30 +19,18 @@
             box-sizing: border-box;
         }
 
-       .container {
-    background-color: white;
-    padding: 25px 20px;
-    border-radius: 20px;
-    box-shadow: 0 10px 30px rgba(0,0,0,0.05);
-    width: 100%;       
-    max-width: 440px;  
-    box-sizing: border-box;
-    text-align: center;
-    margin: 0 auto 25px auto; /* 💡「上・右・下・左」の順。左右を auto にするのが真ん中寄せの王道！ */
-}
-
-/* ⬇️ 下の広告枠（ad-space-box）も左に寄っているはずなので、同じように直します ⬇️ */
-.ad-space-box {
-    width: 100%;
-    max-width: 440px;
-    box-sizing: border-box;
-    background-color: #f1f2f6;
-    border: 2px dashed #ced6e0;
-    border-radius: 12px;
-    padding: 15px;
-    text-align: center;
-    margin: 0 auto; /* 💡 ここも左右を auto にして真ん中寄せにします */
-}
+        .container {
+            background-color: white;
+            padding: 25px 20px;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+            width: 100%;       
+            max-width: 440px;  
+            box-sizing: border-box;
+            text-align: center;
+            /* 【真ん中修正】左右を auto にして、PCでもド真ん中に配置します */
+            margin: 0 auto 25px auto; 
+        }
 
         h1 {
             color: #1e272e;
@@ -189,9 +164,30 @@
             border-radius: 12px;
             padding: 15px;
             text-align: center;
+            /* 【真ん中修正】ここも左右を auto にします */
+            margin: 0 auto 20px auto;
         }
         .ad-label { font-size: 11px; font-weight: bold; color: #a4b0be; margin-bottom: 5px; }
         .ad-placeholder-text { font-size: 12px; color: #a4b0be; line-height: 1.4; }
+
+        /* 【追加：開発者看板リンクのデザイン】 */
+        .author-box {
+            max-width: 440px;
+            width: 100%;
+            text-align: center;
+            margin: 0 auto;
+        }
+        .author-link {
+            font-size: 12px;
+            color: #3498db;
+            text-decoration: none;
+            font-weight: bold;
+            transition: 0.2s;
+        }
+        .author-link:hover {
+            color: #2980b9;
+            text-decoration: underline;
+        }
     </style>
 </head>
 <body>
@@ -216,12 +212,20 @@
         <button id="copy-btn">今日の成果をコピーする 📋</button>
     </div>
 
+    <!-- 広告枠 -->
     <div class="ad-space-box">
         <div class="ad-label">Sponsored</div>
         <div class="ad-placeholder-text">
             ※当サイトは開発費・サーバー維持費のために広告を掲載予定です。<br>
             応援よろしくお願いいたします！
         </div>
+    </div>
+
+    <!-- 【追加：ココアさんの本物のXアカウントへ繋ぐ看板】 -->
+    <div class="author-box">
+        <a class="author-link" href="https://x.com" target="_blank">
+            🛠️ 開発者：ココア (プロのフリーランスへの成長記録はコチラ) 🛠️
+        </a>
     </div>
 
     <script>
@@ -299,7 +303,7 @@
         });
 
         function moveToToday(index) {
-            const taskText = tomorrowTasks.splice(index, 1)[0];
+            const taskText = tomorrowTasks.splice(index, 1);
             if (taskText) {
                 todayTasks.push({ text: taskText, completed: false });
             }
@@ -317,19 +321,3 @@
         copyBtn.addEventListener("click", () => {
             const total = todayTasks.length;
             const completed = todayTasks.filter(t => t.completed).length;
-            const message = `ココアの作戦集中ToDoで今日の戦場を突破！【達成：${completed} / 総数：${total}】前夜に仕込んだ作戦を本日へ一瞬で引っ越しさせて撃破しました！ #作戦集中ToDo`;
-            
-            navigator.clipboard.writeText(message).then(() => {
-                copyBtn.textContent = "コピー完了！そのままXに貼り付けられます！ ✅";
-                copyBtn.style.backgroundColor = "#2ed573";
-                setTimeout(() => {
-                    copyBtn.textContent = "今日の成果をコピーする 📋";
-                    copyBtn.style.backgroundColor = "#1da1f2";
-                }, 2000);
-            });
-        });
-
-        init();
-    </script>
-</body>
-</html>
