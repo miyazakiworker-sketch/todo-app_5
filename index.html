@@ -32,17 +32,30 @@
             box-sizing: border-box;
         }
 
-        .container {
-            background-color: white;
-            padding: 25px 20px;
-            border-radius: 20px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.05);
-            width: 100%;       
-            max-width: 440px;  
-            box-sizing: border-box;
-            text-align: center;
-            margin-bottom: 25px;
-        }
+       .container {
+    background-color: white;
+    padding: 25px 20px;
+    border-radius: 20px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+    width: 100%;       
+    max-width: 440px;  
+    box-sizing: border-box;
+    text-align: center;
+    margin: 0 auto 25px auto; /* 💡「上・右・下・左」の順。左右を auto にするのが真ん中寄せの王道！ */
+}
+
+/* ⬇️ 下の広告枠（ad-space-box）も左に寄っているはずなので、同じように直します ⬇️ */
+.ad-space-box {
+    width: 100%;
+    max-width: 440px;
+    box-sizing: border-box;
+    background-color: #f1f2f6;
+    border: 2px dashed #ced6e0;
+    border-radius: 12px;
+    padding: 15px;
+    text-align: center;
+    margin: 0 auto; /* 💡 ここも左右を auto にして真ん中寄せにします */
+}
 
         h1 {
             color: #1e272e;
