@@ -229,95 +229,131 @@
     </div>
 
     <script>
+    // 画面読み込み完了後に安全に作動させる
+    window.addEventListener('DOMContentLoaded', () => {
         const taskInput = document.getElementById("task-input");
         const addBtn = document.getElementById("add-btn");
-        const tomorrowList = document.getElementById("tomorrow-list");
-        const todayList = document.getElementById("today-list");
-        const clearTodayBtn = document.getElementById("clear-today-btn");
-        const copyBtn = document.getElementById("copy-btn");
+        const taskList = document.getElementById("task-list");
+        const moveBtn = document.getElementById("move-btn"); // 引っ越しボタン
 
-        let tomorrowTasks = JSON.parse(localStorage.getItem("cocoa_tomorrow")) || [];
-        let todayTasks = JSON.parse(localStorage.getItem("cocoa_today")) || [];
+        // タイマー用パーツの取得
+        const timerDisplay = document.getElementById("timer-display");
+        const startBtn = document.getElementById("start-btn");
+        const resetBtn = document.getElementById("reset-btn");
 
-        function init() {
-            renderTomorrow();
-            renderToday();
-        }
+        let tasks = JSON.parse(localStorage.getItem("cocoa-tasks")) || [];
+        let timer = null;
+        let timeLeft = 25 * 60; // 初期値25分
+        let isWorking = true;   // true:集中時間, false:休憩時間
 
-        function renderTomorrow() {
-            tomorrowList.innerHTML = "";
-            tomorrowTasks.forEach((task, index) => {
+        // 1. タスク描画システム
+        function renderTasks() {
+            if (!taskList) return;
+            taskList.innerHTML = "";
+            tasks.forEach((task, index) => {
                 const li = document.createElement("li");
-                li.className = "todo-item";
-                
-                const span = document.createElement("span");
-                span.className = "todo-text";
-                span.textContent = task;
+                li.style.display = "flex";
+                li.style.justifyContent = "space-between";
+                li.style.alignItems = "center";
+                li.style.padding = "10px";
+                li.style.borderBottom = "1px solid #444";
+                li.style.color = task.completed ? "#666" : "#fff";
+                li.style.textDecoration = task.completed ? "line-through" : "none";
 
-                const moveBtn = document.createElement("button");
-                moveBtn.className = "move-btn";
-                moveBtn.textContent = "☀️本日へ";
-                moveBtn.addEventListener("click", () => moveToToday(index));
-
-                li.appendChild(span);
-                li.appendChild(moveBtn);
-                tomorrowList.appendChild(li);
+                li.innerHTML = `
+                    <span onclick="toggleTask(${index})" style="cursor:pointer; flex:1; text-align:left;">
+                        ${task.completed ? '✅' : '⬜'} ${task.text}
+                    </span>
+                    <button onclick="deleteTask(${index})" style="background:#e74c3c; color:white; border:none; border-radius:4px; padding:4px 8px; cursor:pointer; font-size:12px;">削除</button>
+                `;
+                taskList.appendChild(li);
             });
-            localStorage.setItem("cocoa_tomorrow", JSON.stringify(tomorrowTasks));
+            localStorage.setItem("cocoa-tasks", JSON.stringify(tasks));
         }
 
-        function renderToday() {
-            todayList.innerHTML = "";
-            todayTasks.forEach((task, index) => {
-                const li = document.createElement("li");
-                li.className = "todo-item";
+        // タスク追加・削除・反転のグローバル化
+        window.toggleTask = (index) => {
+            tasks[index].completed = !tasks[index].completed;
+            renderTasks();
+        };
+        window.deleteTask = (index) => {
+            tasks.splice(index, 1);
+            renderTasks();
+        };
 
-                const checkbox = document.createElement("input");
-                checkbox.type = "checkbox";
-                checkbox.checked = task.completed;
-                checkbox.addEventListener("change", () => {
-                    task.completed = checkbox.checked;
-                    span.classList.toggle("completed", checkbox.checked);
-                    localStorage.setItem("cocoa_today", JSON.stringify(todayTasks));
-                });
-
-                const span = document.createElement("span");
-                span.className = "todo-text";
-                span.textContent = task.text;
-                if(task.completed) span.classList.add("completed");
-
-                li.appendChild(checkbox);
-                li.appendChild(span);
-                todayList.appendChild(li);
+        if (addBtn && taskInput) {
+            addBtn.addEventListener("click", () => {
+                const text = taskInput.value.trim();
+                if (!text) return;
+                tasks.push({ text: text, completed: false });
+                taskInput.value = "";
+                renderTasks();
             });
-            localStorage.setItem("cocoa_today", JSON.stringify(todayTasks));
         }
 
-        addBtn.addEventListener("click", () => {
-            const text = taskInput.value.trim();
-            if (text === "") return;
-
-            tomorrowTasks.push(text);
-            renderTomorrow();
-            taskInput.value = "";
-        });
-
-        function moveToToday(index) {
-            const taskText = tomorrowTasks.splice(index, 1);
-            if (taskText) {
-                todayTasks.push({ text: taskText, completed: false });
-            }
-            renderTomorrow();
-            renderToday();
+        // 2. タスク引っ越し機能（未完了タスクだけ残す）
+        if (moveBtn) {
+            moveBtn.addEventListener("click", () => {
+                tasks = tasks.filter(task => !task.completed);
+                renderTasks();
+                alert("🧹 完了タスクを片付け、未完了タスクを本日に引っ越しました！");
+            });
         }
 
-        clearTodayBtn.addEventListener("click", () => {
-            if(confirm("本日のタスクをすべて消去して、明日の作戦に集中しますか？")) {
-                todayTasks = [];
-                renderToday();
-            }
-        });
+        // 3. 【新機能】ポモドーロ・タイマーロジック
+        function updateTimerDisplay() {
+            if (!timerDisplay) return;
+            const mins = Math.floor(timeLeft / 60).toString().padStart(2, '0');
+            const secs = (timeLeft % 60).toString().padStart(2, '0');
+            timerDisplay.innerText = `${mins}:${secs}`;
+            timerDisplay.style.color = isWorking ? "#e74c3c" : "#2ecc71";
+        }
 
-        copyBtn.addEventListener("click", () => {
-            const total = todayTasks.length;
-            const completed = todayTasks.filter(t => t.completed).length;
+        if (startBtn) {
+            startBtn.addEventListener("click", () => {
+                if (timer) {
+                    clearInterval(timer);
+                    timer = null;
+                    startBtn.innerText = "集中スタート 🔥";
+                } else {
+                    startBtn.innerText = "一時停止 ⏸️";
+                    timer = setInterval(() => {
+                        timeLeft--;
+                        updateTimerDisplay();
+
+                        if (timeLeft <= 0) {
+                            clearInterval(timer);
+                            timer = null;
+                            startBtn.innerText = "集中スタート 🔥";
+                            
+                            if (isWorking) {
+                                alert("🎯 25分集中終了！お疲れ様でした。5分休憩に入りましょう！");
+                                isWorking = false;
+                                timeLeft = 5 * 60; // 5分休憩
+                            } else {
+                                alert("🔥 休憩終了！次の25分集中を開始しましょう！");
+                                isWorking = true;
+                                timeLeft = 25 * 60; // 25分集中
+                            }
+                            updateTimerDisplay();
+                        }
+                    }, 1000);
+                }
+            });
+        }
+
+        if (resetBtn) {
+            resetBtn.addEventListener("click", () => {
+                if (timer) { clearInterval(timer); timer = null; }
+                isWorking = true;
+                timeLeft = 25 * 60;
+                if (startBtn) startBtn.innerText = "集中スタート 🔥";
+                updateTimerDisplay();
+            });
+        }
+
+        // 初期描画
+        renderTasks();
+        updateTimerDisplay();
+    });
+</script>
