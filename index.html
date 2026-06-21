@@ -287,6 +287,22 @@
                             
                             const liveElements = getElements();
                             const inputMin = liveElements.input ? parseInt(liveElements.input.value) : 25;
+                            // ブラウザの機能でピピピッと電子音を3回鳴らす無敵ロジック
+                            const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+                            [0, 200, 400].forEach(delay => {
+                                setTimeout(() => {
+                                    const osc = audioCtx.createOscillator();
+                                    const gain = audioCtx.createGain();
+                                    osc.type = "sine"; 
+                                    osc.frequency.value = 880; // 聞き取りやすい高めのピピッ音
+                                    gain.gain.setValueAtTime(0.1, audioCtx.currentTime);
+                                    osc.connect(gain);
+                                    gain.connect(audioCtx.destination);
+                                    osc.start();
+                                    osc.stop(audioCtx.currentTime + 0.15); // 0.15秒だけ鳴らす
+                                }, delay);
+                            });
+
 
                             if (isWorking) {
                                 alert("🎯 集中時間終了！お疲れ様でした。5分休憩に入りましょう！");
