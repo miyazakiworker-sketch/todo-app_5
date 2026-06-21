@@ -3,12 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>前夜から備える！データ記憶＆引っ越し機能付きToDoリスト</title>
+    <title>前夜から備える！データ記憶＆引っ越し機能付きToDoリスト 3.0</title>
     <style>
+        /* ココアさん仕様：集中できる黒モードデザイン＆PC真ん中寄せ */
         body {
-            background-color: #f6f8fa;
+            background-color: #1a1a1a;
             font-family: 'Helvetica Neue', Arial, sans-serif;
-            color: #333;
+            color: #e0e0e0;
             display: flex;
             flex-direction: column;
             justify-content: center;
@@ -20,27 +21,27 @@
         }
 
         .container {
-            background-color: white;
+            background-color: #262626;
             padding: 25px 20px;
             border-radius: 20px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
             width: 100%;       
             max-width: 440px;  
             box-sizing: border-box;
             text-align: center;
-            /* 【真ん中修正】左右を auto にして、PCでもド真ん中に配置します */
             margin: 0 auto 25px auto; 
+            border: 1px solid #333;
         }
 
         h1 {
-            color: #1e272e;
+            color: #fff;
             font-size: 22px;
             margin-bottom: 5px;
         }
 
         .subtitle {
             font-size: 13px;
-            color: #7f8c8d;
+            color: #888;
             margin-bottom: 20px;
         }
 
@@ -53,12 +54,13 @@
         #task-input {
             flex: 1;
             padding: 10px 15px;
-            border: 2px solid #ddd;
+            background-color: #1a1a1a;
+            border: 2px solid #444;
             border-radius: 25px;
             font-size: 14px;
+            color: #fff;
             outline: none;
         }
-
         #task-input:focus { border-color: #2ecc71; }
 
         #add-btn {
@@ -76,12 +78,12 @@
             text-align: left;
             font-size: 15px;
             font-weight: bold;
-            color: #2c3e50;
+            color: #3498db;
             margin: 15px 0 8px 5px;
             border-left: 4px solid #3498db;
             padding-left: 8px;
         }
-        .section-title.today { border-left-color: #e67e22; }
+        .section-title.today { border-left-color: #e67e22; color: #e67e22; }
 
         .todo-list {
             list-style: none;
@@ -89,8 +91,8 @@
             margin: 0 0 20px 0;
             text-align: left;
             min-height: 50px;
-            background-color: #fcfcfc;
-            border: 1px dashed #eee;
+            background-color: #1a1a1a;
+            border: 1px dashed #333;
             border-radius: 10px;
             padding: 8px;
         }
@@ -99,21 +101,23 @@
             display: flex;
             align-items: center;
             padding: 10px;
-            background-color: white;
-            border: 1px solid #edf2f7;
+            background-color: #262626;
+            border: 1px solid #333;
             border-radius: 8px;
             margin-bottom: 8px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
         }
 
         .todo-text {
             font-size: 14px;
             flex: 1;
+            color: #fff;
+            cursor: pointer;
         }
 
         .completed {
             text-decoration: line-through;
-            color: #bdc3c7;
+            color: #666;
         }
 
         .move-btn {
@@ -125,14 +129,25 @@
             font-weight: bold;
             border-radius: 12px;
             cursor: pointer;
+            margin-right: 8px;
         }
         .move-btn:hover { background-color: #2980b9; }
+
+        .item-delete-btn {
+            background-color: #ff4757;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            padding: 4px 8px;
+            cursor: pointer;
+            font-size: 12px;
+        }
 
         .delete-btn {
             background-color: #ff4757;
             color: white;
             border: none;
-            padding: 10px 20px;
+            padding: 12px 20px;
             font-size: 13px;
             font-weight: bold;
             border-radius: 20px;
@@ -152,25 +167,24 @@
             border-radius: 25px;
             cursor: pointer;
             width: 100%;
-            box-shadow: 0 4px 6px rgba(29, 161, 242, 0.2);
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
         }
 
         .ad-space-box {
             width: 100%;
             max-width: 440px;
             box-sizing: border-box;
-            background-color: #f1f2f6;
-            border: 2px dashed #ced6e0;
+            background-color: #262626;
+            border: 2px dashed #444;
             border-radius: 12px;
             padding: 15px;
             text-align: center;
-            /* 【真ん中修正】ここも左右を auto にします */
+            color: #888;
             margin: 0 auto 20px auto;
         }
-        .ad-label { font-size: 11px; font-weight: bold; color: #a4b0be; margin-bottom: 5px; }
-        .ad-placeholder-text { font-size: 12px; color: #a4b0be; line-height: 1.4; }
+        .ad-label { font-size: 11px; font-weight: bold; color: #666; margin-bottom: 5px; }
+        .ad-placeholder-text { font-size: 12px; color: #888; line-height: 1.4; }
 
-        /* 【追加：開発者看板リンクのデザイン】 */
         .author-box {
             max-width: 440px;
             width: 100%;
@@ -193,11 +207,21 @@
 <body>
 
     <div class="container">
-        <h1>ココアの作戦集中ToDo 2.0</h1>
+        <h1>ココアの作戦集中ToDo 3.0</h1>
         <div class="subtitle">前夜に仕込み、当日に挑む最強サイクル</div>
 
+        <!-- 【新機能】ポモドーロタイマーの追加配置 -->
+        <div style="background-color: #1a1a1a; padding: 15px; border-radius: 12px; margin-bottom: 20px; border: 1px solid #333; text-align: center;">
+            <div style="font-size: 10px; font-weight: bold; color: #666; text-transform: uppercase; letter-spacing: 1px;">Pomodoro Timer</div>
+            <div id="timer-display" style="font-size: 40px; font-weight: bold; font-family: monospace; margin: 5px 0; color: #e74c3c;">25:00</div>
+            <div style="display: flex; gap: 10px; justify-content: center;">
+                <button id="start-btn" style="flex: 1; max-width: 140px; background-color: #2980b9; color: white; border: none; padding: 8px; font-size: 12px; font-weight: bold; border-radius: 20px; cursor: pointer;">集中スタート 🔥</button>
+                <button id="reset-btn" style="background-color: #444; color: #ccc; border: none; padding: 8px 12px; font-size: 12px; font-weight: bold; border-radius: 20px; cursor: pointer;">リセット</button>
+            </div>
+        </div>
+
         <div class="input-area">
-            <input type="text" id="task-input" placeholder="例：明日10分筋トレする、CADの練習..." max-length="30">
+            <input type="text" id="task-input" placeholder="例：明日10分筋トレする、CADの練習..." maxlength="30">
             <button id="add-btn">仕込む</button>
         </div>
 
@@ -208,7 +232,6 @@
         <ul id="today-list" class="todo-list"></ul>
 
         <button id="clear-today-btn" class="delete-btn">今日の戦場を更地にする（限定消去） 🧹</button>
-
         <button id="copy-btn">今日の成果をコピーする 📋</button>
     </div>
 
@@ -221,7 +244,7 @@
         </div>
     </div>
 
-    <!-- 【追加：ココアさんの本物のXアカウントへ繋ぐ看板】 -->
+    <!-- 看板リンク -->
     <div class="author-box">
         <a class="author-link" href="https://x.com/cocoa_next7" target="_blank">
             🛠️ 開発者：ココア (プロのフリーランスへの成長記録はコチラ) 🛠️
@@ -229,78 +252,96 @@
     </div>
 
     <script>
-    // 画面読み込み完了後に安全に作動させる
     window.addEventListener('DOMContentLoaded', () => {
         const taskInput = document.getElementById("task-input");
         const addBtn = document.getElementById("add-btn");
-        const taskList = document.getElementById("task-list");
-        const moveBtn = document.getElementById("move-btn"); // 引っ越しボタン
+        const tomorrowList = document.getElementById("tomorrow-list");
+        const todayList = document.getElementById("today-list");
+        const clearTodayBtn = document.getElementById("clear-today-btn");
+        const copyBtn = document.getElementById("copy-btn");
 
         // タイマー用パーツの取得
         const timerDisplay = document.getElementById("timer-display");
         const startBtn = document.getElementById("start-btn");
         const resetBtn = document.getElementById("reset-btn");
 
-        let tasks = JSON.parse(localStorage.getItem("cocoa-tasks")) || [];
+        let tasks = JSON.parse(localStorage.getItem("cocoa-todo-lists")) || [];
         let timer = null;
-        let timeLeft = 25 * 60; // 初期値25分
-        let isWorking = true;   // true:集中時間, false:休憩時間
+        let timeLeft = 25 * 60; // 25分
+        let isWorking = true;   // true:集中, false:休憩
+        let shareText = "";
 
-        // 1. タスク描画システム
-        function renderTasks() {
-            if (!taskList) return;
-            taskList.innerHTML = "";
+        // ① 描画システム（元の2つのリストへの振り分けロジックを完全復元）
+        function render() {
+            if (!tomorrowList || !todayList) return;
+            tomorrowList.innerHTML = "";
+            todayList.innerHTML = "";
+            
             tasks.forEach((task, index) => {
                 const li = document.createElement("li");
+                li.className = "todo-item";
                 li.style.display = "flex";
-                li.style.justifyContent = "space-between";
                 li.style.alignItems = "center";
                 li.style.padding = "10px";
-                li.style.borderBottom = "1px solid #444";
-                li.style.color = task.completed ? "#666" : "#fff";
-                li.style.textDecoration = task.completed ? "line-through" : "none";
-
-                li.innerHTML = `
-                    <span onclick="toggleTask(${index})" style="cursor:pointer; flex:1; text-align:left;">
-                        ${task.completed ? '✅' : '⬜'} ${task.text}
-                    </span>
-                    <button onclick="deleteTask(${index})" style="background:#e74c3c; color:white; border:none; border-radius:4px; padding:4px 8px; cursor:pointer; font-size:12px;">削除</button>
-                `;
-                taskList.appendChild(li);
+                li.style.marginBottom = "8px";
+                li.style.justifyContent = "space-between";
+                
+                if(task.type === "tomorrow") {
+                    li.innerHTML = `
+                        <button class="move-btn" onclick="moveToToday(${index})" style="background-color:#3498db; color:white; border:none; padding:4px 10px; font-size:11px; font-weight:bold; border-radius:12px; cursor:pointer;">本日へ ☀️</button>
+                        <span class="todo-text" style="flex:1; text-align:left; margin-left:10px; font-size:14px;">${task.text}</span>
+                        <button onclick="removeTask(${index})" style="background-color:#ff4757; color:white; border:none; padding:4px 8px; font-size:11px; border-radius:6px; cursor:pointer;">削除</button>
+                    `;
+                    tomorrowList.appendChild(li);
+                } else {
+                    li.innerHTML = `
+                        <span class="todo-text ${task.completed ? 'completed' : ''}" onclick="toggleComplete(${index})" style="cursor:pointer; flex:1; text-align:left; font-size:14px;">
+                            ${task.completed ? '✅' : '⬜'} ${task.text}
+                        </span>
+                        <button onclick="removeTask(${index})" style="background-color:#ff4757; color:white; border:none; padding:4px 8px; font-size:11px; border-radius:6px; cursor:pointer;">削除</button>
+                    `;
+                    todayList.appendChild(li);
+                }
             });
-            localStorage.setItem("cocoa-tasks", JSON.stringify(tasks));
+            localStorage.setItem("cocoa-todo-lists", JSON.stringify(tasks));
+            updateShareText();
         }
 
-        // タスク追加・削除・反転のグローバル化
-        window.toggleTask = (index) => {
-            tasks[index].completed = !tasks[index].completed;
-            renderTasks();
+        // ボタン連動用に関数をグローバルウインドウへ登録
+        window.moveToToday = (index) => {
+            tasks[index].type = "today";
+            render();
         };
-        window.deleteTask = (index) => {
+        window.removeTask = (index) => {
             tasks.splice(index, 1);
-            renderTasks();
+            render();
+        };
+        window.toggleComplete = (index) => {
+            tasks[index].completed = !tasks[index].completed;
+            render();
         };
 
+        // タスクを前夜の作戦（tomorrow）として追加する
         if (addBtn && taskInput) {
             addBtn.addEventListener("click", () => {
                 const text = taskInput.value.trim();
                 if (!text) return;
-                tasks.push({ text: text, completed: false });
+                tasks.push({ text: text, type: "tomorrow", completed: false });
                 taskInput.value = "";
-                renderTasks();
+                render();
             });
         }
 
-        // 2. タスク引っ越し機能（未完了タスクだけ残す）
-        if (moveBtn) {
-            moveBtn.addEventListener("click", () => {
-                tasks = tasks.filter(task => !task.completed);
-                renderTasks();
-                alert("🧹 完了タスクを片付け、未完了タスクを本日に引っ越しました！");
+        // 今日の戦場を更地にする（限定消去）
+        if (clearTodayBtn) {
+            clearTodayBtn.addEventListener("click", () => {
+                tasks = tasks.filter(task => task.type !== "today");
+                render();
+                alert("🧹 今日の戦場を更地にしました！新しい作戦に集中しましょう。");
             });
         }
 
-        // 3. 【新機能】ポモドーロ・タイマーロジック
+        // ② ポモドーロ・タイマーロジック
         function updateTimerDisplay() {
             if (!timerDisplay) return;
             const mins = Math.floor(timeLeft / 60).toString().padStart(2, '0');
@@ -327,13 +368,13 @@
                             startBtn.innerText = "集中スタート 🔥";
                             
                             if (isWorking) {
-                                alert("🎯 25分集中終了！お疲れ様でした。5分休憩に入りましょう！");
+                                alert("🎯 25分集中終了！5分休憩に入りましょう！");
                                 isWorking = false;
-                                timeLeft = 5 * 60; // 5分休憩
+                                timeLeft = 5 * 60;
                             } else {
-                                alert("🔥 休憩終了！次の25分集中を開始しましょう！");
+                                alert("🔥 休憩終了！次の集中を開始しましょう！");
                                 isWorking = true;
-                                timeLeft = 25 * 60; // 25分集中
+                                timeLeft = 25 * 60;
                             }
                             updateTimerDisplay();
                         }
@@ -352,8 +393,30 @@
             });
         }
 
-        // 初期描画
-        renderTasks();
+        // ③ X報告用テキストの生成
+        function updateShareText() {
+            const todayTasks = tasks.filter(task => task.type === "today");
+            const completedCount = todayTasks.filter(task => task.completed).length;
+            
+            shareText = `【本日の戦場リザルト】\n` +
+                        `本日のタスク達成度: ${completedCount} / ${todayTasks.length}\n` +
+                        `ポモドーロタイマーと連携して圧倒的集中！\n` +
+                        `アプデ後もURLはずっと同じ！\n` +
+                        `#ココアの無敵開発ライフ`;
+        }
+
+        if (copyBtn) {
+            copyBtn.addEventListener("click", () => {
+                navigator.clipboard.writeText(shareText).then(() => {
+                    alert("📋 今日の成果報告をクリップボードにコピーしました！そのままXに貼り付けられます。");
+                }).catch(() => {
+                    alert("⚠️ コピーに失敗しました。");
+                });
+            });
+        }
+
+        // 初期実行
+        render();
         updateTimerDisplay();
     });
 </script>
