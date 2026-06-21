@@ -233,7 +233,7 @@
             });
         }
 
-                // ④ 【時間入力・適用ボタン対応】ポモドーロ・タイマーシステム
+                        // ④ 【時間入力・適用ボタン対応】ポモドーロ・タイマーシステム
         function getElements() {
             const input = document.getElementById("time-input") || document.getElementById("time-select") || document.querySelector("input[type='number']");
             const btn = document.getElementById("apply-btn") || document.getElementById("set-time-btn") || document.querySelector(".container button:not(#add-btn):not(#clear-today-btn):not(#copy-btn)");
@@ -277,7 +277,6 @@
                 } else {
                     startBtn.innerText = "一時停止 ⏸️";
                     timer = setInterval(() => {
-                                            timer = setInterval(() => {
                         timeLeft--;
                         updateTimerDisplay();
 
@@ -286,7 +285,7 @@
                             timer = null;
                             if (startBtn) startBtn.innerText = "集中スタート 🔥";
                             
-                            // 【最優先】alertでフリーズする前に、ブラウザのシンセサイザー機能でピピピッと音を鳴らす！
+                            // 【最優先】alertで画面がフリーズする前にピピピッと音を鳴らす！
                             const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
                             [0, 200, 400].forEach(delay => {
                                 setTimeout(() => {
@@ -302,12 +301,11 @@
                                 }, delay);
                             });
 
-                            // 音が鳴り始めた「あと」に、ポップアップの文字を出す
+                            // 音が鳴り始めた直後に、ポップアップのメッセージを出す
                             const liveElements = getElements();
                             const inputMin = liveElements.input ? parseInt(liveElements.input.value) : 25;
 
                             if (isWorking) {
-
                                 alert("🎯 集中時間終了！お疲れ様でした。5分休憩に入りましょう！");
                                 isWorking = false;
                                 timeLeft = 5 * 60; // 5分休憩
