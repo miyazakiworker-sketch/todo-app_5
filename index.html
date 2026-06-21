@@ -285,9 +285,11 @@
                             timer = null;
                             if (startBtn) startBtn.innerText = "集中スタート 🔥";
                             
-                            // 【最優先】alertで画面がフリーズする前にピピピッと音を鳴らす！
+                            // 【最優先】alertで画面がフリーズする前に、シンセサイザー機能でピピピッと音を鳴らす！
                             const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-                            [0, 200, 400].forEach(delay => {
+                            const delays =; // 千切れていた配列データを完全復元
+                            
+                            delays.forEach(delay => {
                                 setTimeout(() => {
                                     const osc = audioCtx.createOscillator();
                                     const gain = audioCtx.createGain();
@@ -301,20 +303,22 @@
                                 }, delay);
                             });
 
-                            // 音が鳴り始めた直後に、ポップアップのメッセージを出す
-                            const liveElements = getElements();
-                            const inputMin = liveElements.input ? parseInt(liveElements.input.value) : 25;
+                            // 音が鳴り始めた直後（0.5秒後）に、alertのポップアップを追いかけさせる
+                            setTimeout(() => {
+                                const liveElements = getElements();
+                                const inputMin = liveElements.input ? parseInt(liveElements.input.value) : 25;
 
-                            if (isWorking) {
-                                alert("🎯 集中時間終了！お疲れ様でした。5分休憩に入りましょう！");
-                                isWorking = false;
-                                timeLeft = 5 * 60; // 5分休憩
-                            } else {
-                                alert("🔥 休憩終了！次の集中を開始しましょう！");
-                                isWorking = true;
-                                timeLeft = inputMin * 60;
-                            }
-                            updateTimerDisplay();
+                                if (isWorking) {
+                                    alert("🎯 集中時間終了！お疲れ様でした。5分休憩に入りましょう！");
+                                    isWorking = false;
+                                    timeLeft = 5 * 60; // 5分休憩
+                                } else {
+                                    alert("🔥 休憩終了！次の集中を開始しましょう！");
+                                    isWorking = true;
+                                    timeLeft = inputMin * 60;
+                                }
+                                updateTimerDisplay();
+                            }, 500);
                         }
                     }, 1000);
                 }
