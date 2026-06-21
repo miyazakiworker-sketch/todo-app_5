@@ -234,7 +234,10 @@
         }
 
         // ④ 【時間指定対応】ポモドーロ・タイマーシステム
-        const timeSelect = document.getElementById("time-select");
+                // ④ 【時間入力・適用ボタン対応】ポモドーロ・タイマーシステム
+        // 手元のHTMLにある「時間入力欄」と「適用ボタン」のIDを自動でガチッと捕捉
+        const timeInput = document.getElementById("time-input") || document.getElementById("time-select") || { value: "25" };
+        const applyBtn = document.getElementById("apply-btn") || document.getElementById("set-time-btn") || { addEventListener: () => {} };
 
         function updateTimerDisplay() {
             if (!timerDisplay) return;
@@ -244,13 +247,26 @@
             timerDisplay.style.color = isWorking ? "#e74c3c" : "#2ecc71";
         }
 
-        // 選択された時間にリアルタイム連動させるシステム
-        if (timeSelect) {
-            timeSelect.addEventListener("change", () => {
-                if (timer) { clearInterval(timer); timer = null; if (startBtn) startBtn.innerText = "集中スタート 🔥"; }
+        // 「適用ボタン」が押された時に、入力された時間をシュパッと反映させる
+        if (applyBtn.addEventListener) {
+            applyBtn.addEventListener("click", () => {
+                const inputMin = parseInt(timeInput.value);
+                if (!inputMin || inputMin <= 0) {
+                    alert("⚠️ 1分以上の正しい時間を入力してください！");
+                    return;
+                }
+                
+                // 動いているタイマーをだるいバグが出ないよう一度安全にストップ
+                if (timer) { 
+                    clearInterval(timer); 
+                    timer = null; 
+                    if (startBtn) startBtn.innerText = "集中スタート 🔥"; 
+                }
+                
                 isWorking = true;
-                timeLeft = parseInt(timeSelect.value) * 60;
+                timeLeft = inputMin * 60; // 入力された分数を秒数に変換
                 updateTimerDisplay();
+                alert(`🎯 タイマーを【 ${inputMin} 分 】にセットしました！`);
             });
         }
 
@@ -278,7 +294,8 @@
                             } else {
                                 alert("🔥 休憩終了！次の集中を開始しましょう！");
                                 isWorking = true;
-                                timeLeft = (timeSelect ? parseInt(timeSelect.value) : 25) * 60;
+                                const inputMin = parseInt(timeInput.value) || 25;
+                                timeLeft = inputMin * 60;
                             }
                             updateTimerDisplay();
                         }
@@ -291,7 +308,8 @@
             resetBtn.addEventListener("click", () => {
                 if (timer) { clearInterval(timer); timer = null; }
                 isWorking = true;
-                timeLeft = (timeSelect ? parseInt(timeSelect.value) : 25) * 60;
+                const inputMin = parseInt(timeInput.value) || 25;
+                timeLeft = inputMin * 60;
                 if (startBtn) startBtn.innerText = "集中スタート 🔥";
                 updateTimerDisplay();
             });
@@ -301,7 +319,7 @@
         function updateShareText() {
             const todayTasks = tasks.filter(task => task.type === "today");
             const completedCount = todayTasks.filter(task => task.completed).length;
-            shareText = `【本日の戦場リザルト】\nタスク達成度: ${completedCount} / ${todayTasks.length}\n指定タイマーと連携して圧倒的集中！\nアプデ後もURLはずっと同じ！\n#ココアの無敵開発ライフ`;
+            shareText = `【本日の戦場リザルト】\nタスク達成度: ${completedCount} / ${todayTasks.length}\n自由指定タイマーと連携して圧倒的集中！\nアプデ後もURLはずっと同じ！\n#ココアの無敵開発ライフ`;
         }
 
         if (copyBtn) {
