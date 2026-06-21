@@ -211,8 +211,16 @@
         <div class="subtitle">前夜に仕込み、当日に挑む最強サイクル</div>
 
         <!-- 【新機能】ポモドーロタイマーの追加配置 -->
-        <div style="background-color: #1a1a1a; padding: 15px; border-radius: 12px; margin-bottom: 20px; border: 1px solid #333; text-align: center;">
-            <div style="font-size: 10px; font-weight: bold; color: #666; text-transform: uppercase; letter-spacing: 1px;">Pomodoro Timer</div>
+       <!-- 時間変更用の選択ボックス（黒モード対応デザイン） -->
+<div style="margin-top: 10px;">
+    <select id="time-select" style="background-color: #1a1a1a; color: #fff; border: 1px solid #444; padding: 6px 12px; border-radius: 6px; font-size: 13px; outline: none; cursor: pointer;">
+        <option value="25" selected>25分（標準集中）</option>
+        <option value="15">15分（サクッと集中）</option>
+        <option value="10">10分（超集中）</option>
+        <option value="5">5分（テスト・微調整用）</option>
+    </select>
+</div>
+
             <div id="timer-display" style="font-size: 40px; font-weight: bold; font-family: monospace; margin: 5px 0; color: #e74c3c;">25:00</div>
             <div style="display: flex; gap: 10px; justify-content: center;">
                 <button id="start-btn" style="flex: 1; max-width: 140px; background-color: #2980b9; color: white; border: none; padding: 8px; font-size: 12px; font-weight: bold; border-radius: 20px; cursor: pointer;">集中スタート 🔥</button>
