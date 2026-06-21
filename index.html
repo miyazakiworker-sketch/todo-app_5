@@ -233,42 +233,28 @@
             });
         }
 
-        // ④ 【時間指定対応】ポモドーロ・タイマーシステム
                 // ④ 【時間入力・適用ボタン対応】ポモドーロ・タイマーシステム
-        // 手元のHTMLにある「時間入力欄」と「適用ボタン」のIDを自動でガチッと捕捉
-        const timeInput = document.getElementById("time-input") || document.getElementById("time-select") || { value: "25" };
-        const applyBtn = document.getElementById("apply-btn") || document.getElementById("set-time-btn") || { addEventListener: () => {} };
+        const applyBtn = document.getElementById("apply-btn") || document.getElementById("set-time-btn") || document.querySelector("button[id*='btn']");
 
-        function updateTimerDisplay() {
-            if (!timerDisplay) return;
-            const mins = Math.floor(timeLeft / 60).toString().padStart(2, '0');
-            const secs = (timeLeft % 60).toString().padStart(2, '0');
-            timerDisplay.innerText = `${mins}:${secs}`;
-            timerDisplay.style.color = isWorking ? "#e74c3c" : "#2ecc71";
-        }
-
-        // 「適用ボタン」が押された時に、入力された時間をシュパッと反映させる
-        if (applyBtn.addEventListener) {
+        if (applyBtn) {
             applyBtn.addEventListener("click", () => {
-                const inputMin = parseInt(timeInput.value);
+                // ボタンが押された「その瞬間」に、画面上の時間入力要素（inputかselect）を直接ハックして値を引っこ抜く
+                const currentInput = document.getElementById("time-input") || document.getElementById("time-select") || document.querySelector("input[type='number']") || { value: "25" };
+                const inputMin = parseInt(currentInput.value);
+                
                 if (!inputMin || inputMin <= 0) {
                     alert("⚠️ 1分以上の正しい時間を入力してください！");
                     return;
                 }
                 
-                // 動いているタイマーをだるいバグが出ないよう一度安全にストップ
-                if (timer) { 
-                    clearInterval(timer); 
-                    timer = null; 
-                    if (startBtn) startBtn.innerText = "集中スタート 🔥"; 
-                }
-                
+                if (timer) { clearInterval(timer); timer = null; if (startBtn) startBtn.innerText = "集中スタート 🔥"; }
                 isWorking = true;
-                timeLeft = inputMin * 60; // 入力された分数を秒数に変換
+                timeLeft = inputMin * 60;
                 updateTimerDisplay();
                 alert(`🎯 タイマーを【 ${inputMin} 分 】にセットしました！`);
             });
         }
+
 
         if (startBtn) {
             startBtn.addEventListener("click", () => {
