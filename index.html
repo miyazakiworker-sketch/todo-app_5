@@ -233,7 +233,7 @@
             });
         }
 
-                // ④ 【時間入力・適用ボタン対応】ポモドーロ・タイマーシステム
+              // ④ 【時間入力・適用ボタン対応】ポモドーロ・タイマーシステム
         function getElements() {
             const input = document.getElementById("time-input") || document.getElementById("time-select") || document.querySelector("input[type='number']");
             const btn = document.getElementById("apply-btn") || document.getElementById("set-time-btn") || document.querySelector(".container button:not(#add-btn):not(#clear-today-btn):not(#copy-btn)");
@@ -268,6 +268,30 @@
             });
         }
 
+        // 電子音を安全に3回鳴らす関数（配列を使わないバグ回避ロジック）
+        function playBeepBeep() {
+            const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+            
+            // 1回目：即時
+            setTimeout(() => { triggerSound(audioCtx); }, 0);
+            // 2回目：0.2秒後
+            setTimeout(() => { triggerSound(audioCtx); }, 200);
+            // 3回目：0.4秒後
+            setTimeout(() => { triggerSound(audioCtx); }, 400);
+        }
+
+        function triggerSound(ctx) {
+            const osc = ctx.createOscillator();
+            const gain = ctx.createGain();
+            osc.type = "sine"; 
+            osc.frequency.value = 880; 
+            gain.gain.setValueAtTime(0.1, ctx.currentTime);
+            osc.connect(gain);
+            gain.connect(ctx.destination);
+            osc.start();
+            osc.stop(ctx.currentTime + 0.15);
+        }
+
         if (startBtn) {
             startBtn.addEventListener("click", () => {
                 if (timer) {
@@ -285,25 +309,10 @@
                             timer = null;
                             if (startBtn) startBtn.innerText = "集中スタート 🔥";
                             
-                            // 【最優先】alertで画面がフリーズする前に、シンセサイザー機能でピピピッと音を鳴らす！
-                            const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-                            const delays =; // 千切れていた配列データを完全復元
-                            
-                            delays.forEach(delay => {
-                                setTimeout(() => {
-                                    const osc = audioCtx.createOscillator();
-                                    const gain = audioCtx.createGain();
-                                    osc.type = "sine"; 
-                                    osc.frequency.value = 880; 
-                                    gain.gain.setValueAtTime(0.1, audioCtx.currentTime);
-                                    osc.connect(gain);
-                                    gain.connect(audioCtx.destination);
-                                    osc.start();
-                                    osc.stop(audioCtx.currentTime + 0.15);
-                                }, delay);
-                            });
+                            // 【最優先】alertのフリーズ前に、シンセサイザー音を即実行！
+                            playBeepBeep();
 
-                            // 音が鳴り始めた直後（0.5秒後）に、alertのポップアップを追いかけさせる
+                            // 音が耳に届いた直後（0.5秒後）に、遅れてalertを追いかけさせる
                             setTimeout(() => {
                                 const liveElements = getElements();
                                 const inputMin = liveElements.input ? parseInt(liveElements.input.value) : 25;
